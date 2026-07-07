@@ -397,16 +397,39 @@ function updateCelestialPosition(sunriseSec, sunsetSec, moon) {
         }
     }
     
-    // Map sunT to SVG coordinates (arc from left-horizon node to right-horizon node)
-    // ViewBox 400x180, left node cx=29, right node cx=371, horizon y=110, peak y=14
-    // sunT: 0 = left horizon (sunrise), 1 = right horizon (sunset)
-    const sunX_svg = 29 + sunT * (371 - 29);
-    // Quadratic Bezier formula: P = (1-t)^2*P0 + 2*(1-t)*t*CP + t^2*P1
-    // P0=(29,110), CP=(200,14), P1=(371,110)
-    const sunY_svg = Math.pow(1 - sunT, 2) * 110 + 2 * (1 - sunT) * sunT * 14 + Math.pow(sunT, 2) * 110;
-    // Convert SVG coords to % of orbit-container (viewBox 400x180)
+    // Map sunT to new orbit geometry:
+    //   Above horizon (sunT 0.323→0.677): Bezier arc P0=(120,110) CP=(200,-50) P1=(280,110)
+    //   Below horizon right tail: from (280,110) → (385,185)
+    //   Below horizon left tail:  from (15,185) → (120,110)
+    // ViewBox: 400×190
+    let sunX_svg, sunY_svg;
+    if (isDay) {
+        const t = (now - sunrise) / daylightMs; // 0..1
+        // Quadratic Bezier: P=(1-t)²P0 + 2(1-t)t·CP + t²P1
+        sunX_svg = Math.pow(1-t,2)*120 + 2*(1-t)*t*200 + Math.pow(t,2)*280;
+        sunY_svg = Math.pow(1-t,2)*110 + 2*(1-t)*t*(-50) + Math.pow(t,2)*110;
+    } else {
+        // Night: right tail then left tail
+        let lastSunset = sunset;
+        let nextSunrise = new Date(sunrise.getTime() + 24*60*60*1000);
+        if (now < sunrise) {
+            lastSunset = new Date(sunset.getTime() - 24*60*60*1000);
+            nextSunrise = sunrise;
+        }
+        const nightDuration = nextSunrise - lastSunset;
+        const progress = (now - lastSunset) / nightDuration;
+        if (progress < 0.5) {
+            const tp = progress * 2; // 0..1 along right tail
+            sunX_svg = 280 + tp * (385 - 280);
+            sunY_svg = 110 + tp * (185 - 110);
+        } else {
+            const tp = (progress - 0.5) * 2; // 0..1 along left tail (bottom→node)
+            sunX_svg = 15 + tp * (120 - 15);
+            sunY_svg = 185 - tp * (185 - 110);
+        }
+    }
     const sunXpct = (sunX_svg / 400) * 100;
-    const sunYpct = (sunY_svg / 180) * 100;
+    const sunYpct = (sunY_svg / 190) * 100;
     sunElementEl.style.left = `${sunXpct}%`;
     sunElementEl.style.top = `${sunYpct}%`;
     
@@ -471,10 +494,28 @@ function updateCelestialPosition(sunriseSec, sunsetSec, moon) {
         }
     }
     
-    const moonX_svg = 29 + moonT * (371 - 29);
-    const moonY_svg = Math.pow(1 - moonT, 2) * 110 + 2 * (1 - moonT) * moonT * 14 + Math.pow(moonT, 2) * 110;
+    // Map moonT to same orbit geometry as sun
+    let moonX_svg, moonY_svg;
+    if (isMoonUp) {
+        const t = moonProgress; // 0..1
+        moonX_svg = Math.pow(1-t,2)*120 + 2*(1-t)*t*200 + Math.pow(t,2)*280;
+        moonY_svg = Math.pow(1-t,2)*110 + 2*(1-t)*t*(-50) + Math.pow(t,2)*110;
+    } else {
+        // Below horizon: show approaching moonrise on LEFT tail
+        if (moonProgress < 0.5) {
+            // Left tail: bottom (15,185) → left horizon node (120,110) — approaching rise
+            const tp = moonProgress * 2;
+            moonX_svg = 15 + tp * (120 - 15);
+            moonY_svg = 185 - tp * (185 - 110);
+        } else {
+            // Right tail: right horizon node (280,110) → bottom (385,185) — just set
+            const tp = (moonProgress - 0.5) * 2;
+            moonX_svg = 280 + tp * (385 - 280);
+            moonY_svg = 110 + tp * (185 - 110);
+        }
+    }
     const moonXpct = (moonX_svg / 400) * 100;
-    const moonYpct = (moonY_svg / 180) * 100;
+    const moonYpct = (moonY_svg / 190) * 100;
     moonElementEl.style.left = `${moonXpct}%`;
     moonElementEl.style.top = `${moonYpct}%`;
 }
