@@ -18,6 +18,22 @@
     <div class="glow-orb orb-2"></div>
     <div class="glow-orb orb-3"></div>
 
+    <!-- Shared SVG gradient definitions accessible to all SVG orbit panels -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="sun-gradient" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#f43f5e" />
+                <stop offset="50%"  stop-color="#fb923c" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+            </linearGradient>
+            <linearGradient id="moon-gradient" x1="0" y1="0" x2="400" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#facc15" />
+                <stop offset="50%"  stop-color="#fb923c" />
+                <stop offset="100%" stop-color="#ea580c" />
+            </linearGradient>
+        </defs>
+    </svg>
+
     <!-- Scalable 1920x1080 Dashboard Wrapper -->
     <div id="dashboard-container">
         
@@ -189,34 +205,17 @@
                             <div class="orbit-panel sun-panel">
                                 <h3 class="orbit-title">Sun</h3>
                                 <div class="orbit-container">
-                                    <svg class="orbit-svg" viewBox="0 0 400 180" preserveAspectRatio="none">
-                                        <defs>
-                                            <!-- Sun Orbit Gradient -->
-                                            <linearGradient id="sun-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="32%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="32.1%" stop-color="#f43f5e" stop-opacity="1" />
-                                                <stop offset="50%" stop-color="#fb923c" stop-opacity="1" />
-                                                <stop offset="67.9%" stop-color="#8b5cf6" stop-opacity="1" />
-                                                <stop offset="68%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08" />
-                                            </linearGradient>
-                                            
-                                            <!-- Moon Orbit Gradient -->
-                                            <linearGradient id="moon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="32%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="32.1%" stop-color="#facc15" stop-opacity="1" />
-                                                <stop offset="50%" stop-color="#f97316" stop-opacity="1" />
-                                                <stop offset="67.9%" stop-color="#ea580c" stop-opacity="1" />
-                                                <stop offset="68%" stop-color="#ffffff" stop-opacity="0.08" />
-                                                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.08" />
-                                            </linearGradient>
-                                        </defs>
+                                    <svg class="orbit-svg" viewBox="0 0 400 190" preserveAspectRatio="none">
+                                        <!-- Below-horizon diagonal tails -->
+                                        <line x1="120" y1="110" x2="15" y2="185" class="orbit-tail" />
+                                        <line x1="280" y1="110" x2="385" y2="185" class="orbit-tail" />
+                                        <!-- Horizon dashed line -->
                                         <line x1="10" y1="110" x2="390" y2="110" class="horizon-line" />
-                                        <path d="M 29 110 Q 200 14 371 110" class="orbit-path sun-path" />
-                                        <circle cx="29" cy="110" r="6" class="horizon-node" />
-                                        <circle cx="371" cy="110" r="6" class="horizon-node" />
+                                        <!-- Smooth arc above horizon -->
+                                        <path d="M 120 110 Q 200 -50 280 110" class="orbit-path sun-path" />
+                                        <!-- Horizon intersection nodes -->
+                                        <circle cx="120" cy="110" r="7" class="horizon-node" />
+                                        <circle cx="280" cy="110" r="7" class="horizon-node" />
                                     </svg>
                                     
                                     <!-- Sun Node -->
@@ -244,11 +243,17 @@
                             <div class="orbit-panel moon-panel">
                                 <h3 class="orbit-title">Moon</h3>
                                 <div class="orbit-container">
-                                    <svg class="orbit-svg" viewBox="0 0 400 180" preserveAspectRatio="none">
+                                    <svg class="orbit-svg" viewBox="0 0 400 190" preserveAspectRatio="none">
+                                        <!-- Below-horizon diagonal tails -->
+                                        <line x1="120" y1="110" x2="15" y2="185" class="orbit-tail" />
+                                        <line x1="280" y1="110" x2="385" y2="185" class="orbit-tail" />
+                                        <!-- Horizon dashed line -->
                                         <line x1="10" y1="110" x2="390" y2="110" class="horizon-line" />
-                                        <path d="M 29 110 Q 200 14 371 110" class="orbit-path moon-path" />
-                                        <circle cx="29" cy="110" r="6" class="horizon-node" />
-                                        <circle cx="371" cy="110" r="6" class="horizon-node" />
+                                        <!-- Smooth arc above horizon -->
+                                        <path d="M 120 110 Q 200 -50 280 110" class="orbit-path moon-path" />
+                                        <!-- Horizon intersection nodes -->
+                                        <circle cx="120" cy="110" r="7" class="horizon-node" />
+                                        <circle cx="280" cy="110" r="7" class="horizon-node" />
                                     </svg>
                                     
                                     <!-- Moon Node -->
